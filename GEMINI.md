@@ -34,6 +34,7 @@ This project uses the Object-Oriented Programming (OOP) paradigm.
 - **Start**: `npm start`
 - **Tests**: `npm run test`
 - **Watch Tests**: `npm run test:watch`
+- **Commit**: `npm run commit` (interactive commit helper)
 
 ## Tests
 

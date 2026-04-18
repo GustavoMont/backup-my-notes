@@ -12,6 +12,7 @@
     "format:check": "prettier --check .",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "commit": "cz",
     "prepare": "husky"
   },
   "keywords": [],
@@ -27,6 +28,8 @@
     "@eslint/js": "^10.0.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.6.0",
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^10.2.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-jest": "^29.15.2",
@@ -40,5 +43,10 @@
     "tsx": "^4.21.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.58.2"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
