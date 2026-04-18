@@ -1,0 +1,15 @@
+{
+  "name": "backup-my-notes",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "An OCR script to convert images of handwritten text into .md or .txt files.",
+  "engines": {
+    "node": ">=24.15.0"
+  }
+}
