@@ -20,9 +20,10 @@ This project uses the Object-Oriented Programming (OOP) paradigm.
 
 ### Code Standards
 
-- **Linting**: ESLint
+- **Linting**: ESLint (TypeScript, Jest, and Prettier integration)
 - **Formatting**: Prettier
 - **Conventions**: Follow community standards.
+- **CI**: Automated workflows for tests, linting, and formatting on Pull Requests.
 
 > Every change in the structural stack, as well as increments, must be reflected here.
 
