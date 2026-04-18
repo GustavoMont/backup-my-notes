@@ -22,6 +22,7 @@ This project uses the Object-Oriented Programming (OOP) paradigm.
 
 - **Linting**: ESLint (TypeScript, Jest, and Prettier integration)
 - **Formatting**: Prettier
+- **Hooks**: Husky with lint-staged (runs ESLint and Prettier on pre-commit)
 - **Conventions**: Follow community standards.
 - **CI**: Automated workflows for tests, linting, and formatting on Pull Requests.
 
