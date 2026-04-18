@@ -8,6 +8,8 @@ All features are documented in `docs/features/`, describing what the features do
 
 ## Stack
 
+This project uses the Object-Oriented Programming (OOP) paradigm.
+
 ### Main
 
 - TypeScript
@@ -51,6 +53,10 @@ The project is built using a 3-layer architecture: controller, service, and repo
   - One folder for `unit` tests.
   - One folder for `integration` tests.
 - `utils/` for all kinds of utilities used between layers, services, etc.
+
+### Files
+
+Os arquivos devem seguir o seguinte padrão `kenabe-case.layer.ts` Ex: `image-download.service.ts`
 
 ## Commits
 

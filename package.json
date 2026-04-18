@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsx main.ts",
+    "dev": "tsx --watch main.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage"
   },
   "keywords": [],
   "author": "",
@@ -11,5 +15,13 @@
   "description": "An OCR script to convert images of handwritten text into .md or .txt files.",
   "engines": {
     "node": ">=24.15.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.6.0",
+    "jest": "^30.3.0",
+    "ts-jest": "^29.4.9",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
   }
 }
