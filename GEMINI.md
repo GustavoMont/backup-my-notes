@@ -22,8 +22,8 @@ This project uses the Object-Oriented Programming (OOP) paradigm.
 
 - **Linting**: ESLint (TypeScript, Jest, and Prettier integration)
 - **Formatting**: Prettier
-- **Hooks**: Husky with lint-staged (runs ESLint and Prettier on pre-commit)
-- **Conventions**: Follow community standards.
+- **Hooks**: Husky with lint-staged and commitlint (validates conventional commits)
+- **Conventions**: Follow community standards and conventional commits.
 - **CI**: Automated workflows for tests, linting, and formatting on Pull Requests.
 
 > Every change in the structural stack, as well as increments, must be reflected here.
@@ -34,6 +34,7 @@ This project uses the Object-Oriented Programming (OOP) paradigm.
 - **Start**: `npm start`
 - **Tests**: `npm run test`
 - **Watch Tests**: `npm run test:watch`
+- **Commit**: `npm run commit` (interactive commit helper)
 
 ## Tests
 
