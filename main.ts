@@ -1,1 +1,1 @@
-console.log("Backup My Notes initialized!");
+console.log('Backup My Notes initialized!');
