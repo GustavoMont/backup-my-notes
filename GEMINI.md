@@ -25,6 +25,7 @@ This project uses the Object-Oriented Programming (OOP) paradigm.
 - **Hooks**: Husky with lint-staged and commitlint (validates conventional commits)
 - **Conventions**: Follow community standards and conventional commits.
 - **CI**: Automated workflows for tests, linting, and formatting on Pull Requests.
+- **Node packages**: all node packages should have prefix 'node:'. Ex: "node:path", "node:fs/promises"
 
 > Every change in the structural stack, as well as increments, must be reflected here.
 
@@ -39,7 +40,9 @@ This project uses the Object-Oriented Programming (OOP) paradigm.
 ## Tests
 
 - **TDD**: All features must be tested. Before implementing code, write tests.
-- **BDD**: Test names describe the scenario, not the expected result.
+- **BDD**: Test names must describe the scenario, not the expected result.
+  - avoid using "should blablablabla"
+  - prefer "With blablabla" or "Using blablablbla"
 - **Coverage**: The target is 100% test coverage. The only thing tests won't cover is third-party services.
 - **Test Types**: All features must have integration and unit tests.
 
