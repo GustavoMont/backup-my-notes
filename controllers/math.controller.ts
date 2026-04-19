@@ -1,4 +1,4 @@
-import { MathService } from 'services/math.service';
+import { MathService } from '@/services/math.service';
 
 export class MathController {
   constructor(private mathService: MathService) {}

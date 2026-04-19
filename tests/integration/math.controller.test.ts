@@ -1,5 +1,5 @@
-import { MathController } from 'controllers/math.controller';
-import { MathService } from 'services/math.service';
+import { MathController } from '@/controllers/math.controller';
+import { MathService } from '@/services/math.service';
 
 describe('MathController Integration', () => {
   let controller: MathController;
