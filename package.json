@@ -2,6 +2,7 @@
   "name": "backup-my-notes",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "tsx main.ts",
     "dev": "tsx --watch main.ts",
