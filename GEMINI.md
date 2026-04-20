@@ -26,6 +26,7 @@ This project uses the Object-Oriented Programming (OOP) paradigm.
 - **Conventions**: Follow community standards and conventional commits.
 - **CI**: Automated workflows for tests, linting, and formatting on Pull Requests.
 - **Node packages**: all node packages should have prefix 'node:'. Ex: "node:path", "node:fs/promises"
+- **Typescript**: the use of `any` is strictly prohibited except in very rare exceptions. The use of `as unknown as` should be avoided as much as possible.
 
 > Every change in the structural stack, as well as increments, must be reflected here.
 

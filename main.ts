@@ -2,6 +2,7 @@ import { FileService } from './services/file.service';
 import { FileRepository } from './repositories/file.repository';
 import * as readline from 'readline';
 import { OCRService } from '@/services/ocr.service';
+import { TesseractOCR } from '@/lib/ocr/tesseract.ocr';
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -9,7 +10,8 @@ const rl = readline.createInterface({
 });
 
 const fileRepository = new FileRepository();
-const ocrService = new OCRService();
+const tesseractOCR = new TesseractOCR();
+const ocrService = new OCRService(tesseractOCR);
 const fileService = new FileService(fileRepository, ocrService);
 
 console.log('--- Backup My Notes ---');
