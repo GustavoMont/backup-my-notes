@@ -1,10 +1,12 @@
 import { InvalidInputError } from '@/infra/errors';
-import { join } from 'node:path';
+import { join, extname } from 'node:path';
 import { FileRepository } from '@/repositories/file.repository';
 import { getFileFolderPath, getFileNameFromPath } from '@/utils/path.utils';
 import { OCRService } from './ocr.service';
 
 export class FileService {
+  private readonly ALLOWED_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.bmp', '.webp'];
+
   constructor(
     private fileRepository: FileRepository,
     private ocrService: OCRService,
@@ -18,6 +20,15 @@ export class FileService {
         action: 'Verifique se o caminho para imagem está correto.',
       });
     }
+
+    const extension = extname(imagePath).toLowerCase();
+    if (!this.ALLOWED_EXTENSIONS.includes(extension)) {
+      throw new InvalidInputError({
+        message: 'Formato de arquivo não suportado.',
+        action: `Envie uma imagem nos formatos: ${this.ALLOWED_EXTENSIONS.join(', ')}`,
+      });
+    }
+
     const image = await this.fileRepository.readImage(imagePath);
     const defaultFilePath = join(
       getFileFolderPath(imagePath),

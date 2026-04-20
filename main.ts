@@ -1,7 +1,7 @@
 import { FileService } from './services/file.service';
 import { FileRepository } from './repositories/file.repository';
 import * as readline from 'readline';
-import { OCRService } from '@/services/ocr.service';
+import { OCRFactory } from '@/utils/factories/ocr.factory';
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -9,7 +9,7 @@ const rl = readline.createInterface({
 });
 
 const fileRepository = new FileRepository();
-const ocrService = new OCRService();
+const ocrService = OCRFactory.create();
 const fileService = new FileService(fileRepository, ocrService);
 
 console.log('--- Backup My Notes ---');

@@ -6,10 +6,12 @@ import { join } from 'node:path';
 import { existsSync } from 'node:fs';
 import { InvalidInputError } from '@/infra/errors';
 import { OCRService } from '@/services/ocr.service';
+import { IOCRWrapper } from '@/lib/ocr/ocr.wrapper';
 
 describe('FileController Integration', () => {
   let tempDir: string;
   let fileService: FileService;
+  let ocrWrapperMock: jest.Mocked<IOCRWrapper>;
 
   beforeAll(async () => {
     tempDir = await mkdtemp(join(os.tmpdir(), 'backup-my-notes-'));
@@ -20,8 +22,11 @@ describe('FileController Integration', () => {
   });
 
   beforeEach(() => {
+    ocrWrapperMock = {
+      recognize: jest.fn().mockResolvedValue('Extracted text'),
+    };
     const fileRepository = new FileRepository();
-    const ocrService = new OCRService();
+    const ocrService = new OCRService(ocrWrapperMock);
     fileService = new FileService(fileRepository, ocrService);
   });
 
@@ -35,7 +40,7 @@ describe('FileController Integration', () => {
 
     expect(existsSync(destPath)).toBe(true);
     const content = await readFile(destPath, 'utf-8');
-    expect(content).toContain('File content placeholder');
+    expect(content).toContain('Extracted text');
   });
 
   it('With no output path provided.', async () => {
@@ -46,6 +51,31 @@ describe('FileController Integration', () => {
 
     const defaultPath = join(tempDir, 'input.txt');
     expect(existsSync(defaultPath)).toBe(true);
+  });
+
+  it('With a non-image file (.txt)', async () => {
+    const filePath = join(tempDir, 'not-an-image.txt');
+    await writeFile(filePath, 'some text content');
+
+    await expect(fileService.processFile(filePath)).rejects.toThrow(
+      new InvalidInputError({
+        message: 'Formato de arquivo não suportado.',
+        action: 'Envie uma imagem nos formatos: .png, .jpg, .jpeg, .bmp, .webp',
+      }),
+    );
+  });
+
+  it('With an image larger than 100MB', async () => {
+    const imagePath = join(tempDir, 'large.jpg');
+    const bigBuffer = Buffer.alloc(100 * 1024 * 1024 + 1);
+    await writeFile(imagePath, bigBuffer);
+
+    await expect(fileService.processFile(imagePath)).rejects.toThrow(
+      new InvalidInputError({
+        message: 'Imagem muito grande.',
+        action: 'A imagem deve ter no máximo 100MB.',
+      }),
+    );
   });
 
   it('With nonexisting image', async () => {
