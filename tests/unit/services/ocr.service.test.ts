@@ -5,24 +5,57 @@ import { InvalidInputError } from '@/infra/errors';
 
 describe('OCRService', () => {
   let ocrService: OCRService;
-  let ocrWrapperMock: jest.Mocked<IOCRWrapper>;
+  let primaryMock: jest.Mocked<IOCRWrapper>;
+  let fallbackMock: jest.Mocked<IOCRWrapper>;
 
   beforeEach(() => {
-    ocrWrapperMock = {
+    primaryMock = {
       recognize: jest.fn(),
     };
-    ocrService = new OCRService(ocrWrapperMock);
+    fallbackMock = {
+      recognize: jest.fn(),
+    };
+    ocrService = new OCRService(primaryMock, fallbackMock);
   });
 
   describe('Using generic OCR Wrapper', () => {
-    it('With a valid image, returns the extracted text', async () => {
+    it('With a valid image, returns the extracted text from primary', async () => {
       const imageBuffer = Buffer.from('dummy-image');
-      ocrWrapperMock.recognize.mockResolvedValue(expectedText);
+      primaryMock.recognize.mockResolvedValue(expectedText);
 
       const result = await ocrService.processImage(imageBuffer);
 
       expect(result).toBe(expectedText);
-      expect(ocrWrapperMock.recognize).toHaveBeenCalledWith(imageBuffer);
+      expect(primaryMock.recognize).toHaveBeenCalledWith(imageBuffer);
+      expect(fallbackMock.recognize).not.toHaveBeenCalled();
+    });
+
+    it('When primary fails and fallback is available, returns text from fallback', async () => {
+      const imageBuffer = Buffer.from('dummy-image');
+      primaryMock.recognize.mockRejectedValue(new Error('Primary failed'));
+      fallbackMock.recognize.mockResolvedValue('Fallback text');
+
+      const result = await ocrService.processImage(imageBuffer);
+
+      expect(result).toBe('Fallback text');
+      expect(primaryMock.recognize).toHaveBeenCalled();
+      expect(fallbackMock.recognize).toHaveBeenCalledWith(imageBuffer);
+    });
+
+    it('When both primary and fallback fail, throws an error', async () => {
+      const imageBuffer = Buffer.from('dummy-image');
+      primaryMock.recognize.mockRejectedValue(new Error('Primary failed'));
+      fallbackMock.recognize.mockRejectedValue(new Error('Fallback failed'));
+
+      await expect(ocrService.processImage(imageBuffer)).rejects.toThrow('Fallback failed');
+    });
+
+    it('When primary fails and NO fallback is available, throws an error', async () => {
+      ocrService = new OCRService(primaryMock);
+      const imageBuffer = Buffer.from('dummy-image');
+      primaryMock.recognize.mockRejectedValue(new Error('Primary failed'));
+
+      await expect(ocrService.processImage(imageBuffer)).rejects.toThrow('Primary failed');
     });
 
     it('With an image larger than 100MB, throws InvalidInputError', async () => {
@@ -34,13 +67,6 @@ describe('OCRService', () => {
           action: 'A imagem deve ter no máximo 100MB.',
         }),
       );
-    });
-
-    it('When OCR fails, throws an error', async () => {
-      const imageBuffer = Buffer.from('dummy-image');
-      ocrWrapperMock.recognize.mockRejectedValue(new Error('Tesseract failed'));
-
-      await expect(ocrService.processImage(imageBuffer)).rejects.toThrow('Tesseract failed');
     });
   });
 });
