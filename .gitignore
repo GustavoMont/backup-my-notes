@@ -4,3 +4,5 @@ coverage/
 .dev/
 
 .env
+
+*.traineddata
