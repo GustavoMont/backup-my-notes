@@ -13,6 +13,8 @@
     "format:check": "prettier --check .",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "leak:check": "docker compose -f infra/compose.yaml run --rm gitleaks detect --source  /code --no-git --verbose",
+    "leak:check:commit": "docker compose -f infra/compose.yaml run --rm gitleaks protect --source /code --staged --verbose",
     "commit": "cz",
     "prepare": "husky"
   },
