@@ -68,3 +68,13 @@ Os arquivos devem seguir o seguinte padrão `kenabe-case.layer.ts` Ex: `image-do
 
 - All commit should be a release: nothing should be broken in a commit
 - Follow conventional commits
+
+## Enviroment Variables
+
+All enviroment variable should be documented in `.env.development` file. API Keys, 3-Party services secrete information and similars, should have value `dummy-secret`.
+
+Secret values should not appear in any commit, and should be protected by `gitleaks` inplementation.
+
+### Using in system
+
+Use a module `EnvManager` to use any enviroment variable in implementation code. The direct usage by `process.env` should be avoided

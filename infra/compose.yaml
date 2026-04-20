@@ -1,0 +1,6 @@
+services:
+  gitleaks:
+    image: zricethezav/gitleaks:latest
+    volumes:
+      - ../:/code
+    working_dir: /code

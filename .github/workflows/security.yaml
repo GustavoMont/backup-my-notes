@@ -1,0 +1,18 @@
+name: Security
+
+on: pull_request
+
+jobs:
+  leak-searcher:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks via Docker
+        run: |
+          docker compose -f infra/compose.yaml run --rm gitleaks detect \
+          --source /code \
+          --verbose \
+          --log-opts="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
