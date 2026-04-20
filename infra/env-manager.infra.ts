@@ -7,12 +7,16 @@ dotenv.config({
 });
 
 class EnvManager {
+  getEnv(): NodeJS.ProcessEnv {
+    return process.env;
+  }
+
   getVariables(): EnvDTOType {
-    const { data, error } = envDTO.safeParse(process.env);
+    const { data, error } = envDTO.safeParse(this.getEnv());
     if (error) {
       console.warn(error);
       return {
-        GOOGLE_VISION_JSON_API_KEY: process.env.GOOGLE_VISION_JSON_API_KEY || '',
+        GOOGLE_VISION_JSON_API_KEY: this.getEnv().GOOGLE_VISION_JSON_API_KEY || '',
         NODE_ENV: 'development',
       };
     }
