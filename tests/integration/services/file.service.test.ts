@@ -1,17 +1,22 @@
 import { FileService } from '@/services/file.service';
 import { FileRepository } from '@/repositories/file.repository';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile, copyFile } from 'node:fs/promises';
 import os from 'node:os';
 import { join } from 'node:path';
 import { existsSync } from 'node:fs';
 import { InvalidInputError } from '@/infra/errors';
-import { OCRService } from '@/services/ocr.service';
-import { IOCRWrapper } from '@/lib/ocr/ocr.wrapper';
+import { OCRFactory } from '@/utils/factories/ocr.factory';
+import { envManager } from '@/infra/env-manager.infra';
+import { TesseractOCR } from '@/lib/ocr/tesseract.ocr';
+import sharp from 'sharp';
 
 describe('FileController Integration', () => {
   let tempDir: string;
   let fileService: FileService;
-  let ocrWrapperMock: jest.Mocked<IOCRWrapper>;
+  const validImagePath = join('tests', 'mocks', 'valid-image.png');
+  let grayscaleSpy: jest.SpyInstance<sharp.Sharp, [grayscale?: boolean | undefined], unknown>;
+  let normalizeSpy: jest.SpyInstance<sharp.Sharp, [normalize?: undefined], unknown>;
+  let thresholdSpy: jest.SpyInstance<sharp.Sharp, [threshold?: number], unknown>;
 
   beforeAll(async () => {
     tempDir = await mkdtemp(join(os.tmpdir(), 'backup-my-notes-'));
@@ -22,19 +27,33 @@ describe('FileController Integration', () => {
   });
 
   beforeEach(() => {
-    ocrWrapperMock = {
-      recognize: jest.fn().mockResolvedValue('Extracted text'),
-    };
+    jest.spyOn(envManager, 'getEnv').mockReturnValue({});
+    jest.spyOn(TesseractOCR.prototype, 'recognize').mockResolvedValue('Extracted text');
+    jest.spyOn(console, 'warn').mockReturnValue();
+    grayscaleSpy = jest.spyOn(sharp.prototype, 'grayscale') as jest.SpyInstance<
+      sharp.Sharp,
+      [grayscale?: boolean | undefined],
+      unknown
+    >;
+    normalizeSpy = jest.spyOn(sharp.prototype, 'normalise') as jest.SpyInstance<
+      sharp.Sharp,
+      [normalize?: undefined],
+      unknown
+    >;
+    thresholdSpy = jest.spyOn(sharp.prototype, 'threshold') as jest.SpyInstance<
+      sharp.Sharp,
+      [threshold?: number],
+      unknown
+    >;
     const fileRepository = new FileRepository();
-    const ocrService = new OCRService(ocrWrapperMock);
+    const ocrService = OCRFactory.create();
     fileService = new FileService(fileRepository, ocrService);
   });
 
   it('With output path provided', async () => {
     const imagePath = join(tempDir, 'input.jpg');
+    await copyFile(validImagePath, imagePath);
     const destPath = join(tempDir, 'folder', 'output.txt');
-
-    await writeFile(imagePath, 'fake-image-data');
 
     await fileService.processFile(imagePath, destPath);
 
@@ -45,10 +64,12 @@ describe('FileController Integration', () => {
 
   it('With no output path provided.', async () => {
     const imagePath = join(tempDir, 'input.jpg');
-    await writeFile(imagePath, 'fake-image-data');
+    await copyFile(join('tests', 'mocks', 'valid-image.png'), imagePath);
 
     await fileService.processFile(imagePath);
-
+    expect(grayscaleSpy).toHaveBeenCalled();
+    expect(normalizeSpy).toHaveBeenCalled();
+    expect(thresholdSpy).toHaveBeenCalled();
     const defaultPath = join(tempDir, 'input.txt');
     expect(existsSync(defaultPath)).toBe(true);
   });
@@ -78,6 +99,19 @@ describe('FileController Integration', () => {
     );
   });
 
+  it('With an invalid image buffer', async () => {
+    const imagePath = join(tempDir, 'large.jpg');
+    const bigBuffer = Buffer.alloc(90 * 1024 * 1024 + 1);
+    await writeFile(imagePath, bigBuffer);
+
+    await expect(fileService.processFile(imagePath)).rejects.toThrow(
+      new InvalidInputError({
+        message: 'Imagem inválida.',
+        action: 'Envie um arquivo de imagem válido.',
+      }),
+    );
+  });
+
   it('With nonexisting image', async () => {
     const imagePath = join(tempDir, 'void', 'non-existing.jpg');
 
@@ -88,6 +122,7 @@ describe('FileController Integration', () => {
       }),
     );
   });
+
   it('With no provided image path', async () => {
     await expect(fileService.processFile('')).rejects.toThrow(
       new InvalidInputError({

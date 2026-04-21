@@ -2,14 +2,14 @@ import { InvalidInputError } from '@/infra/errors';
 import { join, extname } from 'node:path';
 import { FileRepository } from '@/repositories/file.repository';
 import { getFileFolderPath, getFileNameFromPath } from '@/utils/path.utils';
-import { OCRService } from './ocr.service';
+import { IOCRService } from '@/interfaces/ocr-service.interface';
 
 export class FileService {
   private readonly ALLOWED_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.bmp', '.webp'];
 
   constructor(
     private fileRepository: FileRepository,
-    private ocrService: OCRService,
+    private ocrService: IOCRService,
   ) {}
 
   async processFile(imagePath: string, destPath?: string): Promise<void> {
